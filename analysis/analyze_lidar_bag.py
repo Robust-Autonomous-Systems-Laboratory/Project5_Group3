@@ -1,10 +1,9 @@
 import os
 import rclpy
 from rclpy.node import Node
-
 import rosbag2_py
 from rosbag2_py import StorageOptions, ConverterOptions
-
+import numpy as np
 from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
 
@@ -41,8 +40,9 @@ class SimpleBagReader(Node):
                     f"Cannot import '{tm.type}' for topic '{tm.name}'. Skipping. Error: {e}"
                 )
 
-    def read_bag(self, topic_filter: str | None = None):
-        count = 0
+    def read_bag(self,target_angle , angle_window ,topic_filter: str | None = None):
+       
+        all_vals = []
         while self.reader.has_next():
             topic, data, timestamp = self.reader.read_next()
 
@@ -54,17 +54,48 @@ class SimpleBagReader(Node):
                 continue
 
             msg = deserialize_message(data, msg_cls)
-            self.get_logger().info(str(msg.ranges))
+            index = int((target_angle - msg.angle_min) / msg.angle_increment)
 
-            count += 1
+            #Just some guide notes for reference
+            # msg.ranges is an array of distance readings (one per beam)
+            # beam 0 corresponds to angle msg.angle_min
+            # beam i corresponds to angle:
+
+
+            half = int((angle_window * 0.5) / msg.angle_increment)
+            i0 = max(index - half, 0)
+            i1 = min(index + half, len(msg.ranges) - 1)
+
+            window_ranges = np.array(msg.ranges[i0:i1+1], dtype=float)
+
+            valid = np.isfinite(window_ranges)
+            valid &= (window_ranges >= msg.range_min) & (window_ranges <= msg.range_max)
+
+            all_vals.extend(window_ranges[valid].tolist())
+
+        return np.array(all_vals, dtype=float)
             
 
 def main(args=None):
     rclpy.init(args=args)
     bag_path = "../bags/rosbag_1m"
     node = SimpleBagReader(bag_path)
+    
+    target_angle = 0.0 
+    angle_window = 0.1
+    actual = 1.0
 
-    node.read_bag(topic_filter="/scan")
+    data = node.read_bag(target_angle,angle_window,topic_filter="/scan")
+
+
+# Dont mind this code i was using it for testing will edit it later 
+
+    mean = np.mean(data)
+    sigma = np.std(data)
+
+    print(f"Mean : {mean}")
+    print(f"Sigma : {sigma}")
+    print(f"Bias : {round(mean - actual, 4)}")
 
     node.destroy_node()
     rclpy.shutdown()
