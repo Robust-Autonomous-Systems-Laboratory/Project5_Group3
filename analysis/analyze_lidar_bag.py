@@ -4,6 +4,7 @@ from rclpy.node import Node
 import rosbag2_py
 from rosbag2_py import StorageOptions, ConverterOptions
 import numpy as np
+import matplotlib.pyplot as plt
 from rclpy.serialization import deserialize_message
 from rosidl_runtime_py.utilities import get_message
 
@@ -74,30 +75,63 @@ class SimpleBagReader(Node):
             all_vals.extend(window_ranges[valid].tolist())
 
         return np.array(all_vals, dtype=float)
-            
+
+
+def get_sigma(data, actual):
+
+    mean = round(np.mean(data), 4)
+    sigma = round(np.std(data), 4)
+    bias = round(mean - actual, 4)
+
+
+    return mean, sigma, bias
+
 
 def main(args=None):
     rclpy.init(args=args)
-    bag_path = "../bags/rosbag_1m"
-    node = SimpleBagReader(bag_path)
+    bag_files = [["../bags/rosbag_0_5m", 0.5],["../bags/rosbag_1m", 1],["../bags/rosbag_2m",2.0]]
     
-    target_angle = 0.0 
-    angle_window = 0.1
-    actual = 1.0
+    results = []
 
-    data = node.read_bag(target_angle,angle_window,topic_filter="/scan")
+    for bag_path, actual in bag_files:
 
+        node = SimpleBagReader(bag_path)
+        target_angle = 0.0 
+        angle_window = 0.1
 
-# Dont mind this code i was using it for testing will edit it later 
+        data = node.read_bag(target_angle,angle_window,topic_filter="/scan")
+        mean, sigma, bias = get_sigma(data, actual)
 
-    mean = np.mean(data)
-    sigma = np.std(data)
+        results.append([actual, mean,bias, sigma, data.size])
 
-    print(f"Mean : {mean}")
-    print(f"Sigma : {sigma}")
-    print(f"Bias : {round(mean - actual, 4)}")
+        # Histogram
+        plt.figure()
+        plt.hist(data, bins=50, density=True)
+        plt.axvline(actual)
+        plt.title(f"Histogram For : {actual} m (N={data.size})")
+        plt.xlabel("range (m)")
+        plt.ylabel("density")
+        outpath = f"figures/hist_{str(actual).replace('.','p')}m.png"
+        plt.savefig(outpath, dpi=200)
+        plt.close()
 
-    node.destroy_node()
+    
+        node.destroy_node()
+
+    print("\nSummary:")
+    print("Distance(m)   Mean(m)     Bias(m)     Sigma_hit(m)   N")
+    for d, mean, bias, sigma, n in results:
+        print(f"{d:10.2f}   {mean:8.4f}   {bias:8.4f}   {sigma:11.4f}   {n}")
+
+    ds = [r[0] for r in results]
+    sigs = [r[3] for r in results]
+    plt.figure()
+    plt.plot(ds, sigs, marker="o")
+    plt.title("Sigma_hit vs Distance")
+    plt.xlabel("True distance (m)")
+    plt.ylabel("Sigma_hit (m)")
+    plt.savefig("figures/sigma_vs_distance.png", dpi=200)
+    plt.close()
     rclpy.shutdown()
 
 if __name__ == "__main__":
