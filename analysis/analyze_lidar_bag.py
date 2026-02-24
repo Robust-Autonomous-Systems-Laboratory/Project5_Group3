@@ -57,12 +57,6 @@ class SimpleBagReader(Node):
             msg = deserialize_message(data, msg_cls)
             index = int((target_angle - msg.angle_min) / msg.angle_increment)
 
-            #Just some guide notes for reference
-            # msg.ranges is an array of distance readings (one per beam)
-            # beam 0 corresponds to angle msg.angle_min
-            # beam i corresponds to angle:
-
-
             half = int((angle_window * 0.5) / msg.angle_increment)
             i0 = max(index - half, 0)
             i1 = min(index + half, len(msg.ranges) - 1)
