@@ -31,30 +31,60 @@ class LidaCalibration(Node):
         self.target_angle = float(self.get_parameter("target_angle").value)
         self.angle_window = float(self.get_parameter("angle_window").value)
 
+        # TODO: initialize Welford's online algorithm state variables
+        # n     : int   — count of measurements seen so far
+        # mean  : float — running mean
+        # M2    : float — running sum of squared deviations (for variance)
+        # For each new measurement x:
+        #   n += 1
+        #   delta = x - mean
+        #   mean += delta / n
+        #   M2 += delta * (x - mean)
+        #   variance = M2 / n          (or M2 / (n-1) for sample variance)
+        #   sigma_hit = sqrt(variance)
+
+        # TODO: initialize outlier counter
+        
+
         self.sigma_hit = 0.0
         self.bias = 0.0
-        
-        ##required subscriptions and publisher accord to the doc
+
+        # required subscriptions and publishers
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
+
+        # publishes current measurement error: z - z*  (std_msgs/Float64)
         self.range_error_pub = self.create_publisher(Float64, "/calibration/range_error", pub_qos)
-        self.statistics_pub =  self.create_publisher(Float64, "/calibration/statistics", pub_qos)
 
-    def handle_scans(self, msg:LaserScan):
+        # publishes running statistics (std_msgs/Float64 reused for sigma_hit)
+        # TODO: custom message? Array?
+        self.statistics_pub = self.create_publisher(Float64, "/calibration/statistics", pub_qos)
 
-        print(f"angle min : {msg.angle_min}")
-        print(f"angle max : {msg.angle_max}")
-        print(f"angle incr : {msg.angle_increment}")
-        print(f"data : {msg.ranges[0:10]}")
+    def handle_scans(self, msg: LaserScan):
+        # TODO: find the beam index for target_angle
+       
 
+        # TODO: compute window indices from angle_window, clamp to valid range
+        # half = int((self.angle_window * 0.5) / msg.angle_increment)
+        # i0 = max(index - half, 0)
+        # i1 = min(index + half, len(msg.ranges) - 1)
 
-    def p_hit(self):
+        # TODO: extract and filter the window
+        # - reject values that are not finite
+        # - reject values outside [msg.range_min, msg.range_max]
+
+        # TODO: for each valid measurement z:
+        #   1. compute range_error = z - self.target_distance
+        #   2. publish range_error on /calibration/range_error
+        #   3. update Welford running statistics (n, mean, M2)
+        #   4. update sigma_hit = sqrt(M2 / n)
+        #   5. increment outlier_count if |z - mean| > 3 * sigma_hit
+        #   6. publish sigma_hit on /calibration/statistics
+
+        # TODO: periodically log current estimates, e.g. every 100 scans:
         pass
-    def p_short(self):
-        pass
-    def p_max(self):
-        pass
-    def p_rand(self):
-        pass
+
+    # TODO: implement on_shutdown to save results to YAML
+
     
 
 
