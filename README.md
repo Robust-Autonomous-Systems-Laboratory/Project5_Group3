@@ -91,22 +91,13 @@ Across all the measurements it appears although the p_hit dominates. There do no
 
 ![sigma vs distance](analysis/figures/sigma_vs_distance.png)
 
-<!-- TODO: Describe the trend in sigma_hit across distances.
-     - Does it grow linearly? Stay flat? -->
 
 ### Proposed Uncertainty Model
 
-<!-- TODO: Report the fitted linear model from your analysis:
-
-
-     Justify whether the linear model is a good fit or whether a simpler
-     constant model is adequate. Compare to the LDS-01 spec (±30 mm). -->
 
 ### Outlier Rates and Mixing Weight Discussion
 
-<!-- TODO: Discuss whether z_hit is close to 1.0 at all distances
-     (meaning the sensor is well-behaved) or whether significant fractions
-     of z_short / z_rand / z_max are present and what caused them. -->
+
 
 ---
 
@@ -114,23 +105,13 @@ Across all the measurements it appears although the p_hit dominates. There do no
 
 **Q1. Does the measurement distribution match the Gaussian assumption of p_hit?**
 
-<!-- TODO: Reference your Q-Q plots and Shapiro-Wilk results.
-     State whether the Gaussian assumption holds and at which distances
-     it breaks down (if any). Discuss what deviations you observed. -->
+Yes with some caveats. It appears as thought the gaussian distribution appears with larger measurement distances. I believe with more measurements over a longer time we would be more likley to see this emerge. I think that a gaussian centered on the mean is a reasonable assumption for the distributions. The only real outlier in my mind is 1m 
 
 **Q2. How does measurement uncertainty vary with distance?**
 
-<!-- TODO: Quantify the trend using your fitted σ₀ and σ₁.
-     State whether uncertainty increases meaningfully over the 0.5–2.0 m
-     range tested or whether it is approximately constant. -->
 
 **Q3. Were there systematic biases? How would you correct for them?**
 
-<!-- TODO: Report the bias at each distance from your results table.
-     If the bias is roughly constant, suggest a fixed additive correction.
-     If it scales with distance, suggest a multiplicative correction factor.
-     Note possible sources: robot not fully perpendicular, tape measure
-     placement (front of robot vs LiDAR origin), etc. -->
 
 ---
 
