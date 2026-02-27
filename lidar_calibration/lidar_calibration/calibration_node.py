@@ -35,25 +35,19 @@ class LidaCalibration(Node):
         self.target_angle = float(self.get_parameter("target_angle").value)
         self.angle_window = float(self.get_parameter("angle_window").value)
 
-        # TODO: initialize Welford's online algorithm state variables
         self.n = 0
         self.running_mean = 0.0
         self.M2 = 0.0
 
-        # TODO: initialize outlier counter
         self.outlier_count = 0
 
         self.max_range = 0.0
         self.sigma_hit = 0.0
-        self.short_reading = 0.0
         self.measured_values = np.array([])
         self.running_error = 0.0
-        self.lambda_short = 0.0
 
         self.p_hit = 0.0
-        self.p_short = 0.0
-        self.p_rand = 0.0
-        self.p_max = 0.0
+        
         
         # required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
@@ -83,6 +77,7 @@ class LidaCalibration(Node):
             self.range_error_pub.publish(Float64(data=meas_error))
 
             # update Welford running statistics
+            # https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm
             self.n += 1
             delta = z - self.running_mean
             self.running_mean += delta / self.n
@@ -97,22 +92,17 @@ class LidaCalibration(Node):
             if self.n > 20 and abs(z - self.running_mean) > 3 * self.sigma_hit:
                 self.outlier_count += 1
 
+            # log current estimated mean, sigma_hit, and outlier count every 100 scans
+            if self.n % 100 == 0:
+                self.get_logger().info(f"Scans: {self.n}  Mean: {self.running_mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
+
         # publish sigma_hit on /calibration/statistics
         self.statistics_pub.publish(Float64(data=self.sigma_hit))
-
-
-        self.short_readings = self.measured_values[self.measured_values < self.target_distance]
 
 
         self.mean = self.running_mean
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
-
-        
-
-        # log curent estimated mean, sigma_hit, and outlier count every 100 scans
-        if self.n % 100 == 0:
-            self.get_logger().info(f"Scans: {self.n}  Mean: {self.mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
 
 
     def p_hit(self):
@@ -129,7 +119,6 @@ class LidaCalibration(Node):
             "sigma_hit": float(self.sigma_hit),
             "mean_measurement": float(self.running_mean),
             "measurement_error": float(self.running_mean - self.target_distance),
-            "lambda_short": float(getattr(self, "lambda_short", 0.0)),
             "outlier_count": int(self.outlier_count),
             "num_samples": int(self.n),
             "max_range": float(self.max_range),
@@ -144,6 +133,7 @@ class LidaCalibration(Node):
 
 
 def main():
+    
     rclpy.init()
     node = LidaCalibration()
 
