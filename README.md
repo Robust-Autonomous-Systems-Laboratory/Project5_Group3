@@ -112,5 +112,51 @@ colcon build --packages-select lidar_calibration
 source install/setup.bash
 ```
 
-need to finish when node is actually written and functional.
+### Run the Calibration Node
 
+Run with default parameters (target distance = 1.0 m, target angle = 0 rad, angle window = 0.1 rad):
+
+```bash
+ros2 run lidar_calibration calibration_node
+```
+
+Run with a specific target distance (e.g. 0.5 m):
+
+```bash
+ros2 run lidar_calibration calibration_node --ros-args -p target_distance:=0.5
+```
+
+Run with all parameters specified:
+
+```bash
+ros2 run lidar_calibration calibration_node --ros-args \
+  -p target_distance:=2.0 \
+  -p target_angle:=0.0 \
+  -p angle_window:=0.1
+```
+
+### Play Back a Recorded Bag
+
+```bash
+ros2 bag play data/rosbag_1m
+```
+
+Then in a second terminal, run the node with the matching target distance:
+
+```bash
+ros2 run lidar_calibration calibration_node --ros-args -p target_distance:=1.0
+```
+
+### Monitor Published Topics
+
+```bash
+# Current measurement error (z - z*)
+ros2 topic echo /calibration/range_error
+
+# Running sigma_hit estimate
+ros2 topic echo /calibration/statistics
+```
+
+---
+
+*Generative artificial intelligence was used by Anders Smitterberg to assist with developing and debugging the `calibration_node.py` and `analyze_lidar_bag.py` scripts, and for formatting this README.*

@@ -105,11 +105,6 @@ class LidaCalibration(Node):
         self.max_range = msg.range_max
 
 
-    def p_hit(self):
-        a = 1 / (sqrt( 2 * pi * self.sigma_hit ** 2 ))
-        b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
-        self.p_hit = a * b
-
     def on_shutdown(self):
 
         results = {
@@ -130,7 +125,6 @@ class LidaCalibration(Node):
 
         self.get_logger().info(f"Calibration results saved to {save_path}")
         
-
 
 def main():
     
