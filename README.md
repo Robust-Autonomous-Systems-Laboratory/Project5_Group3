@@ -112,7 +112,7 @@ At 0.5 m, the sensor showed extremely small measurement error and very low noi
 - **Samples:** 207  
 - **Outliers:** 19  
 
-At 1.0 m, a small systematic bias was observed, with the sensor slightly overestimating the distance by about 6.7 mm. The noise level increased compared to 0.5 m, as shown by the larger $\sigma_{hit}$. Nineteen outliers were detected, which represents:
+At 1.0 m, a small systematic bias was observed, with the sensor slightly overestimating the distance by about 6.7 mm, almost certainly due to our shoddy initial setup. The noise level increased compared to 0.5 m, as shown by the larger $\sigma_{hit}$. Nineteen outliers were detected, which represents:
 
 $$\frac{19}{207} = 9.18\%$$
 
