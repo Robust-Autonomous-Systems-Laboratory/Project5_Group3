@@ -43,6 +43,7 @@ class LidaCalibration(Node):
 
         self.max_range = 0.0
         self.sigma_hit = 0.0
+        self.short_reading = 0.0
         self.measured_values = np.array([])
         self.running_error = 0.0
 
@@ -102,15 +103,15 @@ class LidaCalibration(Node):
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
 
+        
+
         # TODO: periodically log current estimates, e.g. every 100 scans:
 
 
 
     def p_hit(self):
-
         a = 1 / (sqrt( 2 * pi * self.sigma_hit ** 2 ))
         b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
-
         self.p_hit = a * b
 
     def p_short(self):
