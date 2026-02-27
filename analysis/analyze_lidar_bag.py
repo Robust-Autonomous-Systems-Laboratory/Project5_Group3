@@ -30,7 +30,7 @@ BAG_FILES = [
 ]
 
 TARGET_ANGLE = 0.0   # radians — 0 = forward-facing beam
-ANGLE_WINDOW = 0.2   # radians to average over
+ANGLE_WINDOW = 0.1   # radians to average over
 
 os.makedirs(os.path.join(HERE, "figures"), exist_ok=True)
 
@@ -103,8 +103,8 @@ for true_dist, r in sorted(results.items()):
 # ---------------------------------------------------------------------------
 
 print("\n--- Parameter Estimation ---")
-print(f"{'z*(m)':>6} {'N':>6} {'Mean(m)':>9} {'Bias(m)':>9} {'sigma_hit(m)':>13}")
-print("-" * 48)
+print(f"{'z*(m)':>6} {'N':>6} {'Mean(m)':>9} {'Bias(m)':>9} {'sigma_hit(m)':>13} {'Outliers':>10}")
+print("-" * 60)
 
 for true_dist, r in sorted(results.items()):
     data = r["data"]
@@ -112,10 +112,13 @@ for true_dist, r in sorted(results.items()):
     mean      = np.mean(data)
     sigma_hit = np.std(data)
     bias      = mean - true_dist
+    
+    # outliers > 3 sigma
+    outliers = np.sum(np.abs(data - mean) > 3 * sigma_hit)
 
-    results[true_dist].update({"mean": mean, "sigma_hit": sigma_hit, "bias": bias})
+    results[true_dist].update({"mean": mean, "sigma_hit": sigma_hit, "bias": bias, "outliers": outliers})
 
-    print(f"{true_dist:6.2f} {len(data):6d} {mean:9.4f} {bias:9.4f} {sigma_hit:13.4f}")
+    print(f"{true_dist:6.2f} {len(data):6d} {mean:9.4f} {bias:9.4f} {sigma_hit:13.4f} {outliers:10d}")
 
 
 # ---------------------------------------------------------------------------
