@@ -80,7 +80,10 @@ Across all the measurements it appears although the p_hit dominates. There do no
 
 
 ### Proposed Uncertainty Model
-
+The Beam Model represents the probability of a LiDAR measurement using several components, but in this implementation I focused primarily on the p_hit
+component. The p_hit term models accurate range measurements as a Gaussian distribution centered at the expected distance z_star
+, with standard deviation signma_hit. The parameter sigma_hit represents the sensor’s measurement noise and determines how spread out the measurements are around the true distance. For calibration, we placed the LiDAR at a known target distance and collected range measurements within a small angular window around the target angle. We then used Welford’s algorithm to compute the running mean and variance of the measurements. From the running variance, we calculated sigma_hit
+,which quantifies the random noise in the sensor readings. By continuously updating the running statistics, We were able to estimate how much the measurements fluctuated around the true distance. A small sigma_hit indicates that the sensor is precise with low noise, while a larger sigma_hit indicates greater measurement uncertainty. We also monitored the difference between the running mean and the known target distance to observe any systematic bias, but the primary calibration parameter used in the beam model was sigma_hit Overall, the calibration process allowed me to estimate the Gaussian noise parameter sigma_hit which is essential for accurately modeling the likelihood of LiDAR measurements in the beam model.
 
 ### Outlier Rates and Discussion
 
