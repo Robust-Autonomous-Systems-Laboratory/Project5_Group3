@@ -104,26 +104,6 @@ class LidaCalibration(Node):
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
 
-
-    def p_hit(self):
-        a = 1 / (sqrt( 2 * pi * self.sigma_hit ** 2 ))
-        b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
-        self.p_hit = a * b
-
-    def p_short(self):
-        pass
-
-    def p_max(self):
-        
-        if(self.mean >= self.max_range):
-            self.p_max = 1
-        else:
-            self.p_max = 0
-
-    def p_rand(self):
-        
-        self.p_rand = 1 / self.max_range
-    
     # TODO: implement on_shutdown to save results to YAML
 
 
