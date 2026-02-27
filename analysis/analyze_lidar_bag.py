@@ -118,7 +118,6 @@ for true_dist, r in sorted(results.items()):
     print(f"{true_dist:6.2f} {len(data):6d} {mean:9.4f} {bias:9.4f} {sigma_hit:13.4f}")
 
 
-
 # ---------------------------------------------------------------------------
 # Section 4 (2.4): Model Validation — sigma_hit vs Distance
 # ---------------------------------------------------------------------------
