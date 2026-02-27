@@ -5,6 +5,8 @@ from std_msgs.msg import Float64
 import numpy as np
 from math import sqrt, pi, exp
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
+import yaml
+from pathlib import Path
 
 class LidaCalibration(Node):
 
@@ -46,6 +48,7 @@ class LidaCalibration(Node):
         self.short_reading = 0.0
         self.measured_values = np.array([])
         self.running_error = 0.0
+        self.lambda_short = 0.0
 
         self.p_hit = 0.0
         self.p_short = 0.0
@@ -97,6 +100,10 @@ class LidaCalibration(Node):
         # publish sigma_hit on /calibration/statistics
         self.statistics_pub.publish(Float64(data=self.sigma_hit))
 
+
+        self.short_readings = self.measured_values[self.measured_values < self.target_distance]
+
+
         self.mean = self.running_mean
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
@@ -113,28 +120,41 @@ class LidaCalibration(Node):
         b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
         self.p_hit = a * b
 
-    def p_short(self):
-        pass
-
-    def p_max(self):
-        
-        if(self.mean >= self.max_range):
-            self.p_max = 1
-        else:
-            self.p_max = 0
-
-    def p_rand(self):
-        
-        self.p_rand = 1 / self.max_range
     
-    # TODO: implement on_shutdown to save results to YAML
+    def on_shutdown(self):
+
+        results = {
+            "target_distance": float(self.target_distance),
+            "target_angle": float(self.target_angle),
+            "sigma_hit": float(self.sigma_hit),
+            "mean_measurement": float(self.running_mean),
+            "measurement_error": float(self.running_mean - self.target_distance),
+            "lambda_short": float(getattr(self, "lambda_short", 0.0)),
+            "outlier_count": int(self.outlier_count),
+            "num_samples": int(self.n),
+            "max_range": float(self.max_range),
+        }
+
+        save_path = Path.home() / "lidar_calibration.yaml"
+
+        with open(save_path, "w") as f:
+            yaml.dump(results, f, default_flow_style=False)
+
+        self.get_logger().info(f"Calibration results saved to {save_path}")
 
 
 def main():
     rclpy.init()
     node = LidaCalibration()
-    rclpy.spin(node)
-    rclpy.shutdown()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.on_shutdown()
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
