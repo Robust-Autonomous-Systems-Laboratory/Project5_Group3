@@ -35,8 +35,8 @@ class LidaCalibration(Node):
         self.sigma_hit = 0.0
         self.bias = 0.0
         self.measured_values = np.array([])
-
-        self.z_star = 0.0
+        self.meean = 0.0
+        self.error = 0.0
         
         ##required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
@@ -54,10 +54,13 @@ class LidaCalibration(Node):
         valid = np.isfinite(window_ranges)
         valid &= (window_ranges >= msg.range_min) & (window_ranges <= msg.range_max)
         self.measured_values = np.array(window_ranges[valid].tolist(), dtype=float)
+        
 
-        self.z_star = np.mean(self.measured_values)
+        self.mean = np.mean(self.measured_values)
+        self.sigma_hit = np.std(self.measured_values)
+        self.error = self.mean - self.target_distance
 
-        print(self.z_star)
+        print(self.mean)
 
 
     def p_hit(self):
