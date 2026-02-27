@@ -84,7 +84,7 @@ class LidaCalibration(Node):
 
     def p_max(self):
         
-        if(round(self.mean) >= round(self.max_range)):
+        if(self.mean >= self.max_range):
             self.p_max = 1
         else:
             self.p_max = 0
