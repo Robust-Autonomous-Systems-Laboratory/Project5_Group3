@@ -80,6 +80,7 @@ class LidaCalibration(Node):
             self.range_error_pub.publish(Float64(data=meas_error))
 
             # update Welford running statistics
+            # https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance #Welford's_online_algorithm
             self.n += 1
             delta = z - self.running_mean
             self.running_mean += delta / self.n
