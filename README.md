@@ -96,9 +96,12 @@ Yes with some caveats. It appears as thought the gaussian distribution appears w
 
 **Q2. How does measurement uncertainty vary with distance?**
 
+In general it appears that as distance increases so does measurement uncertainty. This is a good thing as it means our model is working, and is what we would expect. The return power would be less for a device that is further away, and you would expect the uncersainty to increase. this is clearly visible in our model. It appears through our limited samples that at least for small changes like this then a linear model for uncaertainty is appropriate. 
+
 
 **Q3. Were there systematic biases? How would you correct for them?**
 
+Yes, for our measurement setups some of them were not set up correctly, introducting systemic bias into our measurements, additionally it was difficult to determine exactly where the reference of the LiDAR was, and as such it was difficult to precicely or accurately position the robot. we attempted to echo the /scan topic to position the robot at exactly the reference distance, but even with that it was extremely difficult to move the robot precisely.
 
 ---
 
