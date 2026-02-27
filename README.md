@@ -9,9 +9,7 @@ EE5531 Intro to Robotics
 
 ### Beam Model Overview
 
-<!-- TODO: 2-3 sentences describing Thrun's Beam Model and its four components
-     (p_hit, p_short, p_max, p_rand). Explain why we care about sigma_hit
-     and what it tells us about the sensor. -->
+Thrun's beam model is introduced as a method of charactizing LiDAR performance. Thrun characterizes a lidar using several parameters p hit pshort p max and prand. These four parameters respond to individual probability distributions what when combined form the probability model for the entire LiDAR. it is in theory possible to determine all of these parameters experimentally, and then develop a good emasure for the LiDar. A Good LiDAR in my mind should have a very narrow tall gaussian distribition around the nominally correct measurement value, it should dominate the measurement, and is lilkey sufficient for characterizing the performance of the model, and is likley the only thing we will be able to measure using our measuring setup.
 
 ### Calibration Approach
 
@@ -24,14 +22,16 @@ EE5531 Intro to Robotics
 
 | Distance (m) | Bag file | Duration (s) | Approx. samples |
 |:---:|---|:---:|:---:|
-| 0.5 | `data/rosbag_0_5m` | 10 seconds | 100 samples |
-| 1.0 | `data/rosbag_1m`   | 10 seconds | 105 samples |
-| 2.0 | `data/rosbag_2m`   | 10 seconds | 121 samples |
+| 0.5 | `data/rosbag_0_5m` | ~ 10 seconds | 100 samples |
+| 1.0 | `data/rosbag_1m`   | ~ 10 seconds | 105 samples |
+| 2.0 | `data/rosbag_2m`   | ~ 10 seconds | 121 samples |
 
 
 Using two meter sticks and several two by four pieces of lumber we attempted to position the front of the LDS as close to the nominal distance as possible. using the rostopic echo command we then fine tuned the distance until the first measurement of the bag was as close as possible to the nominal distance. We ensured the robot was perpendicular to the wall by sight. The scan rate was approximately 5hz. By scanning for approximately ten seconds for each bag we got a reasonable amount of data. In hindsight a much longer time would have been preferred.
 
 ### Challenges and How They Were Addressed
+
+There were quite a few challenges when setting up the measurements, first of all it was difficult to know precicely where the reference of the LiDAR was, and it was difficult to align it exactly and get it perpendicular to the wall. we set up two meter sticks on a few two by fours to elevate the meter stick to the correct heigth to get us as close as possible. To get as close to the nominal measurement value as possible we rostopic echoed the /scan command once and looked at the first value corresponding to 0.0 degrees, which, in theory was dead ahead. We then tried to move the robot precicely to the nominal measurement value as possible. As you can see however from our results there were still some substantial systemic bias issues in the measurements.  
 
 
 
