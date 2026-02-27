@@ -24,9 +24,9 @@ EE5531 Intro to Robotics
 
 | Distance (m) | Bag file | Duration (s) | Approx. samples |
 |:---:|---|:---:|:---:|
-| 0.5 | `data/rosbag_0_5m` | <!-- TODO --> | <!-- TODO --> |
-| 1.0 | `data/rosbag_1m`   | <!-- TODO --> | <!-- TODO --> |
-| 2.0 | `data/rosbag_2m`   | <!-- TODO --> | <!-- TODO --> |
+| 0.5 | `data/rosbag_0_5m` | 10 seconds | 100 samples |
+| 1.0 | `data/rosbag_1m`   | 10 seconds | 105 samples |
+| 2.0 | `data/rosbag_2m`   | 10 seconds | 121 samples |
 
 
 Using two meter sticks and several two by four pieces of lumber we attempted to position the front of the LDS as close to the nominal distance as possible. using the rostopic echo command we then fine tuned the distance until the first measurement of the bag was as close as possible to the nominal distance. We ensured the robot was perpendicular to the wall by sight. The scan rate was approximately 5hz. By scanning for approximately ten seconds for each bag we got a reasonable amount of data. In hindsight a much longer time would have been preferred.
