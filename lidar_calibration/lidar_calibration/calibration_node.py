@@ -100,8 +100,9 @@ class LidaCalibration(Node):
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
 
-        # TODO: periodically log current estimates, e.g. every 100 scans:
-
+        # log curent estimated mean, sigma_hit, and outlier count every 100 scans
+        if self.n % 100 == 0:
+            self.get_logger().info(f"Scans: {self.n}  Mean: {self.mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
 
 
     def p_hit(self):
