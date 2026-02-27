@@ -3,6 +3,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float64
 import numpy as np
+from math import sqrt, pi, exp
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
 class LidaCalibration(Node):
@@ -32,11 +33,16 @@ class LidaCalibration(Node):
         self.target_angle = float(self.get_parameter("target_angle").value)
         self.angle_window = float(self.get_parameter("angle_window").value)
 
+        self.max_range = 0.0
         self.sigma_hit = 0.0
-        self.bias = 0.0
         self.measured_values = np.array([])
         self.meean = 0.0
         self.error = 0.0
+
+        self.p_hit = 0.0
+        self.p_short = 0.0
+        self.p_rand = 0.0
+        self.p_max = 0.0
         
         ##required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
@@ -54,23 +60,38 @@ class LidaCalibration(Node):
         valid = np.isfinite(window_ranges)
         valid &= (window_ranges >= msg.range_min) & (window_ranges <= msg.range_max)
         self.measured_values = np.array(window_ranges[valid].tolist(), dtype=float)
-        
+
 
         self.mean = np.mean(self.measured_values)
         self.sigma_hit = np.std(self.measured_values)
         self.error = self.mean - self.target_distance
 
-        print(self.mean)
+        self.max_range = msg.range_max
+
+        self.range_error_pub.publish(self.error)
+
 
 
     def p_hit(self):
-        pass
+
+        a = 1 / (sqrt( 2 * pi * self.sigma_hit ** 2 ))
+        b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
+
+        self.p_hit = a * b
+
     def p_short(self):
         pass
+
     def p_max(self):
-        pass
+        
+        if(round(self.mean) >= round(self.max_range)):
+            self.p_max = 1
+        else:
+            self.p_max = 0
+
     def p_rand(self):
-        pass
+        
+        self.p_rand = 1 / self.max_range
     
 
 
