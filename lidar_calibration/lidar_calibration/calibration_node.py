@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float64
+import numpy as np
+from math import sqrt, pi, exp
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
 class LidaCalibration(Node):
@@ -44,12 +46,19 @@ class LidaCalibration(Node):
         #   sigma_hit = sqrt(variance)
 
         # TODO: initialize outlier counter
-        
 
+        self.max_range = 0.0
         self.sigma_hit = 0.0
-        self.bias = 0.0
+        self.measured_values = np.array([])
+        self.meean = 0.0
+        self.error = 0.0
 
-        # required subscriptions and publishers
+        self.p_hit = 0.0
+        self.p_short = 0.0
+        self.p_rand = 0.0
+        self.p_max = 0.0
+        
+        ##required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
 
         # publishes current measurement error: z - z*  (std_msgs/Float64)
@@ -57,20 +66,19 @@ class LidaCalibration(Node):
 
         # publishes running statistics (std_msgs/Float64 reused for sigma_hit)
         # TODO: custom message? Array?
-        self.statistics_pub = self.create_publisher(Float64, "/calibration/statistics", pub_qos)
+        self.statistics_pub =  self.create_publisher(Float64, "/calibration/statistics", pub_qos)
 
-    def handle_scans(self, msg: LaserScan):
-        # TODO: find the beam index for target_angle
-       
+    def handle_scans(self, msg:LaserScan):
 
-        # TODO: compute window indices from angle_window, clamp to valid range
-        # half = int((self.angle_window * 0.5) / msg.angle_increment)
-        # i0 = max(index - half, 0)
-        # i1 = min(index + half, len(msg.ranges) - 1)
+        index = int((self.target_angle - msg.angle_min) / msg.angle_increment)
+        half = int((self.angle_window * 0.5) / msg.angle_increment)
+        i0 = max(index - half, 0)
+        i1 = min(index + half, len(msg.ranges) - 1)
 
-        # TODO: extract and filter the window
-        # - reject values that are not finite
-        # - reject values outside [msg.range_min, msg.range_max]
+        window_ranges = np.array(msg.ranges[i0:i1+1], dtype=float)
+        valid = np.isfinite(window_ranges)
+        valid &= (window_ranges >= msg.range_min) & (window_ranges <= msg.range_max)
+        self.measured_values = np.array(window_ranges[valid].tolist(), dtype=float)
 
         # TODO: for each valid measurement z:
         #   1. compute range_error = z - self.target_distance
@@ -80,12 +88,40 @@ class LidaCalibration(Node):
         #   5. increment outlier_count if |z - mean| > 3 * sigma_hit
         #   6. publish sigma_hit on /calibration/statistics
 
+        self.mean = np.mean(self.measured_values)
+        self.sigma_hit = np.std(self.measured_values)
+        self.error = self.mean - self.target_distance
+
+        self.max_range = msg.range_max
+
+        self.range_error_pub.publish(self.error)
+
         # TODO: periodically log current estimates, e.g. every 100 scans:
+
+
+
+    def p_hit(self):
+
+        a = 1 / (sqrt( 2 * pi * self.sigma_hit ** 2 ))
+        b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
+
+        self.p_hit = a * b
+
+    def p_short(self):
         pass
 
-    # TODO: implement on_shutdown to save results to YAML
+    def p_max(self):
+        
+        if(self.mean >= self.max_range):
+            self.p_max = 1
+        else:
+            self.p_max = 0
 
+    def p_rand(self):
+        
+        self.p_rand = 1 / self.max_range
     
+    # TODO: implement on_shutdown to save results to YAML
 
 
 def main():
