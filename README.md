@@ -9,9 +9,7 @@ EE5531 Intro to Robotics
 
 ### Beam Model Overview
 
-<!-- TODO: 2-3 sentences describing Thrun's Beam Model and its four components
-     (p_hit, p_short, p_max, p_rand). Explain why we care about sigma_hit
-     and what it tells us about the sensor. -->
+Thrun's beam model is introduced as a method of charactizing LiDAR performance. Thrun characterizes a lidar using several parameters p hit pshort p max and prand. These four parameters respond to individual probability distributions what when combined form the probability model for the entire LiDAR. it is in theory possible to determine all of these parameters experimentally, and then develop a good emasure for the LiDar. A Good LiDAR in my mind should have a very narrow tall gaussian distribition around the nominally correct measurement value, it should dominate the measurement, and is lilkey sufficient for characterizing the performance of the model, and is likley the only thing we will be able to measure using our measuring setup.
 
 ### Calibration Approach
 
