@@ -110,7 +110,6 @@ class LidaCalibration(Node):
         b = exp ( -1 * ( (self.error ** 2) / 2 * self.sigma_hit ** 2 ))
         self.p_hit = a * b
 
-    
     def on_shutdown(self):
 
         results = {
@@ -130,6 +129,7 @@ class LidaCalibration(Node):
             yaml.dump(results, f, default_flow_style=False)
 
         self.get_logger().info(f"Calibration results saved to {save_path}")
+        
 
 
 def main():
