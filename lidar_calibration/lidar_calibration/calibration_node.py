@@ -92,8 +92,8 @@ class LidaCalibration(Node):
             if self.n > 20 and abs(z - self.running_mean) > 3 * self.sigma_hit:
                 self.outlier_count += 1
 
-            # log current estimated mean, sigma_hit, and outlier count every 100 scans
-            if self.n % 100 == 0:
+            # log current estimated mean, sigma_hit, and outlier count every 25 scans
+            if self.n % 25 == 0:
                 self.get_logger().info(f"Scans: {self.n}  Mean: {self.running_mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
 
         # publish sigma_hit on /calibration/statistics

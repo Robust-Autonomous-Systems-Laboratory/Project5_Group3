@@ -92,7 +92,7 @@ Across all the measurements it appears although the p_hit dominates. There do no
 
 **Q1. Does the measurement distribution match the Gaussian assumption of p_hit?**
 
-Yes with some caveats. It appears as thought the gaussian distribution appears with larger measurement distances. I believe with more measurements over a longer time we would be more likley to see this emerge. I think that a gaussian centered on the mean is a reasonable assumption for the distributions. The only real outlier in my mind is 1m 
+Yes with some caveats. It appears as thought the gaussian distribution appears with larger measurement distances. I believe with more measurements over a longer time we would be more likley to see this emerge. I think that a gaussian centered on the mean is a reasonable assumption for the distributions. The only real outlier in my mind is 1m which has some distinct looking tails. 
 
 **Q2. How does measurement uncertainty vary with distance?**
 
