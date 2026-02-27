@@ -82,7 +82,7 @@ Across all the measurements it appears although the p_hit dominates. There do no
 ### Proposed Uncertainty Model
 
 
-### Outlier Rates and Mixing Weight Discussion
+### Outlier Rates and Discussion
 
 
 
