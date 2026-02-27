@@ -1,6 +1,6 @@
 # Project 5: Laser Range Finder Intrinsic Parameter Estimation
 
-**Anders Smitterberg · Progress Munoriarwa**  
+**Anders Smitterberg & Progress Munoriarwa**  
 EE5531 Intro to Robotics
 
 ---
@@ -59,7 +59,7 @@ It appears as though the standard deviation increases significantly in this dist
 
 ### Distribution Shape Discussion
 
-Across all the measurements, it appears as though $p_{hit}$ dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0 m distribution. Additionally, there didn't appear to be any "long" measurements on the sensor; if there were, they were likely already clipped by the firmware. If we had to characterize these distributions, we would have preferred longer ROS bags, and we suspect they would have eventually converged to a Gaussian-like distribution. We believe that $p_{hit}$ dominates, and for simplicity's sake, it is sufficient to characterize this sensor's performance.
+Across all the measurements, it appears as though $p_{hit}$ dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0 m distribution. Additionally, there didn't appear to be any "long" measurements on the sensor; if there were, they were likely already clipped by the firmware Anders suspects. If we had to characterize these distributions, we would have preferred longer ROS bags, and we suspect they would have eventually converged to a Gaussian-like distribution. We believe that $p_{hit}$ dominates, and for simplicity's sake, it is sufficient to characterize this sensor's performance.
 
 ---
 
