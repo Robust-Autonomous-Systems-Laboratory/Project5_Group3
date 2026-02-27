@@ -52,14 +52,12 @@ class LidaCalibration(Node):
         self.p_rand = 0.0
         self.p_max = 0.0
         
-        ##required subscriptions and publisher accord to the doc
+        # required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
 
         # publishes current measurement error: z - z*  (std_msgs/Float64)
         self.range_error_pub = self.create_publisher(Float64, "/calibration/range_error", pub_qos)
 
-        # publishes running statistics (std_msgs/Float64 reused for sigma_hit)
-        # TODO: custom message? Array?
         self.statistics_pub =  self.create_publisher(Float64, "/calibration/statistics", pub_qos)
 
     def handle_scans(self, msg:LaserScan):
@@ -105,8 +103,9 @@ class LidaCalibration(Node):
 
         
 
-        # TODO: periodically log current estimates, e.g. every 100 scans:
-
+        # log curent estimated mean, sigma_hit, and outlier count every 100 scans
+        if self.n % 100 == 0:
+            self.get_logger().info(f"Scans: {self.n}  Mean: {self.mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
 
 
     def p_hit(self):
