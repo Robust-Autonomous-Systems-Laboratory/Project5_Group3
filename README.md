@@ -1,6 +1,7 @@
 # Project 5: Laser Range Finder Intrinsic Parameter Estimation
 
-**Anders Smitterberg · Progress Munoriarwa** — EE5531 Intro to Robotics
+**Anders Smitterberg · Progress Munoriarwa**  
+EE5531 Intro to Robotics
 
 ---
 
@@ -44,30 +45,24 @@
 
 ## 2. Histogram Analysis
 
-Progress I plotted your fifgures here
 
 ### 0.5 m
 
-![Histogram 0.5 m](analysis/figures/hist_0p5m.png)
+![Histogram 0.5 m](analysis/figures/hist_0_5m.png)
 
-<!-- TODO: Describe the distribution shape at 0.5 m.
-     - Is it roughly Gaussian? Symmetric?
-     - Are there visible tails or outlier clusters?
-     - Does the mean align with the true distance line? -->
+The distribution's mode is approximately at 501mm. the distribution I would not call gaussian. there are visible tails and clusters, but the total range of the measurements is still quite small at about 5mm. Interestingly there are very few short measurements. 
 
 ### 1.0 m
 
-![Histogram 1.0 m](analysis/figures/hist_1m.png)
+![Histogram 1.0 m](analysis/figures/hist_1_0m.png)
 
-<!-- TODO: Same description for 1.0 m. Note any changes vs 0.5 m. -->
+The measured distribution reads long, the mean is at 1007 mm, which is substantially longer than anticipated, this is likley measurement error. The distribution has much less variance than the 0.5m distribution, but also has more clearly defined tails.
 
 ### 2.0 m
 
-![Histogram 2.0 m](analysis/figures/hist_2p0m.png)
+![Histogram 2.0 m](analysis/figures/hist_2_0m.png)
 
-<!-- TODO: Same description for 2.0 m.
-     - Does the spread visibly increase with distance?
-     - More or fewer outliers? -->
+It appears as though the standard deviation increases greatly in this distribution. the mean is slighyly higher than the nominal measurement value, and the distribution appears much more gaussian. 
 
 ### Distribution Shape Discussion
 
@@ -78,6 +73,8 @@ Progress I plotted your fifgures here
      - Whether the full four-component beam model is warranted by this data,
        or whether a simple Gaussian is sufficient -->
 
+Across all the measurements it appears although the p_hit dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0m distribution. Additionally there didn't appear to be any "long" measurements on the sensor. if there were they were already likley clipped by the firmware. If I had to characteize these distribution I would have preferred longer rosbags, and I suspect they would have converged to a gaussian appearing distribution. I believe that p_hit appears to dominate, and for simplicity's sake I believe is sufficient to characterize this sensor's performance.
+
 ---
 
 ## 3. Parameter Estimation and Results
@@ -86,17 +83,9 @@ Progress I plotted your fifgures here
 
 | z\* (m) | N | Mean (m) | Bias (m) | σ_hit (m) | Outlier rate | Short rate |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 0.5 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
-| 1.0 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
-| 2.0 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
-
-### Beam Model Mixing Weights
-
-| z\* (m) | z_hit | z_short | z_max | z_rand |
-|:---:|:---:|:---:|:---:|:---:|
-| 0.5 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
-| 1.0 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
-| 2.0 | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> | <!-- TODO --> |
+| 0.5 | 392 | 0.5015 | 0.0015 | 0.0013 | 0.00 | 0.00 |
+| 1.0 | 416 | 1.0068 | 0.0068| 0.0015 | 0.00 | 0.00 |
+| 2.0 | 481 | 2.0034 | 0.0034 | 0.0036 | 0.00 | 0.00 |
 
 ### σ_hit vs Distance
 
