@@ -118,7 +118,7 @@ class LidaCalibration(Node):
             "max_range": float(self.max_range),
         }
 
-        save_path = Path.home() / "lidar_calibration.yaml"
+        save_path = "results/lidar_calibration.yaml"
 
         with open(save_path, "w") as f:
             yaml.dump(results, f, default_flow_style=False)
@@ -138,7 +138,8 @@ def main():
     finally:
         node.on_shutdown()
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
