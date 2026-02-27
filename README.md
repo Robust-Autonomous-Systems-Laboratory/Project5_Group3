@@ -90,7 +90,7 @@ component. The p_hit term models accurate range measurements as a Gaussian distr
 
 We evaluated the LiDAR performance at three known target distances: 0.5 m, 1.0 m, and 2.0 m. For each case, We analyzed the number of samples collected, the estimated sigma_hit, the measurement error, and the number of detected outliers (defined as measurements exceeding 3 standard deviations from the running mean).
 
-*** 0.5 m Results ***
+##### 0.5 m Results
 
 - **Mean measurement:** 0.50077 m  
 - **Measurement error:** 0.00077 m  
@@ -101,7 +101,7 @@ We evaluated the LiDAR performance at three known target distances: 0.5 m, 1.0
 At 0.5 m, the sensor showed extremely small measurement error and very low noise. The estimated sigma_hit was the smallest among all tested distances, indicating very high precision at short range. No outliers were detected, suggesting stable and consistent readings.
 
 
-*** 1.0 m Results ***
+##### 1.0 m Results
 
 - **Mean measurement:** 1.00674 m  
 - **Measurement error:** 0.00674 m  
@@ -111,12 +111,12 @@ At 0.5 m, the sensor showed extremely small measurement error and very low noi
 
 At 1.0 m, a small systematic bias was observed, with the sensor slightly overestimating the distance by about 6.7 mm. The noise level increased compared to 0.5 m, as shown by the larger sigma_hit. Three outliers were detected, which represents:
 
-\frac{3}{184} =  1.63\%
+$\frac{3}{184} = 1.63\%$
 
 This is still a very low outlier rate, indicating generally stable performance.
 
 
-*** 2.0 m Results ***
+##### 2.0 m Results
 
 - **Mean measurement:** 2.00061 m  
 - **Measurement error:** 0.00061 m  
@@ -135,7 +135,6 @@ The results show that:
 
 The increase in sigma_hit with distance is expected because LiDAR measurement uncertainty typically grows with range due to beam divergence and signal attenuation.
 But Overall, the LiDAR demonstrates high precision, minimal systematic bias, and a very low outlier rate, indicating reliable performance for use in the Gaussian p_hit component of the beam model.
-
 
 ---
 
