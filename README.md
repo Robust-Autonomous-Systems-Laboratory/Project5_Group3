@@ -15,11 +15,10 @@ EE5531 Intro to Robotics
 
 ### Calibration Approach
 
-<!-- TODO: Describe the overall approach:
-     - Place robot perpendicular to a flat wall at a known distance
-     - Record /scan data to a ROS2 bag at multiple distances
-     - Offline: extract front-facing beams, fit Gaussian, estimate sigma_hit
-     - Compare distributions against beam model predictions -->
+- Place robot perpendicular to a flat wall at a known distance
+- Record /scan data to a ROS2 bag at multiple distances
+- Offline: extract front-facing beams, fit Gaussian, estimate sigma_hit
+- Compare distributions against beam model predictions
 
 ### Data Collection Procedure
 
@@ -29,17 +28,12 @@ EE5531 Intro to Robotics
 | 1.0 | `data/rosbag_1m`   | <!-- TODO --> | <!-- TODO --> |
 | 2.0 | `data/rosbag_2m`   | <!-- TODO --> | <!-- TODO --> |
 
-<!-- TODO: Describe setup details:
-     - How you measured the true distance (tape measure, etc.)
-     - How you verified the robot was perpendicular to the wall
-     - Scan rate of the sensor and resulting sample count -->
+
+Using two meter sticks and several two by four pieces of lumber we attempted to position the front of the LDS as close to the nominal distance as possible. using the rostopic echo command we then fine tuned the distance until the first measurement of the bag was as close as possible to the nominal distance. We ensured the robot was perpendicular to the wall by sight. The scan rate was approximately 5hz. By scanning for approximately ten seconds for each bag we got a reasonable amount of data. In hindsight a much longer time would have been preferred.
 
 ### Challenges and How They Were Addressed
 
-<!-- TODO: Note any issues you encountered, e.g.:
-     - QoS mismatch when subscribing to /scan (BEST_EFFORT fix)
-     - Uncertainty in true distance measurement
-     - Any reflections or environmental noise -->
+
 
 ---
 
@@ -65,13 +59,6 @@ The measured distribution reads long, the mean is at 1007 mm, which is substanti
 It appears as though the standard deviation increases greatly in this distribution. the mean is slighyly higher than the nominal measurement value, and the distribution appears much more gaussian. 
 
 ### Distribution Shape Discussion
-
-<!-- TODO: Across all three distances, discuss:
-     - Whether the p_hit Gaussian component dominates
-     - Evidence (or lack thereof) for p_short (unexpected short readings)
-     - Evidence for p_max (sensor reporting max range)
-     - Whether the full four-component beam model is warranted by this data,
-       or whether a simple Gaussian is sufficient -->
 
 Across all the measurements it appears although the p_hit dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0m distribution. Additionally there didn't appear to be any "long" measurements on the sensor. if there were they were already likley clipped by the firmware. If I had to characteize these distribution I would have preferred longer rosbags, and I suspect they would have converged to a gaussian appearing distribution. I believe that p_hit appears to dominate, and for simplicity's sake I believe is sufficient to characterize this sensor's performance.
 
