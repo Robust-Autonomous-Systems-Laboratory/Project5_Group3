@@ -27,8 +27,8 @@ class LidaCalibration(Node):
         )
 
         # according to the doc we need to accepts these parameters 
-        self.declare_parameter("target_distance", 1)
-        self.declare_parameter("target_angle", 0)
+        self.declare_parameter("target_distance", 1.0)
+        self.declare_parameter("target_angle", 0.0)
         self.declare_parameter("angle_window", 0.1)
 
         self.target_distance = float(self.get_parameter("target_distance").value)
