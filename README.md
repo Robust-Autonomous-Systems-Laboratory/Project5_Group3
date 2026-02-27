@@ -1,6 +1,6 @@
 # Project 5: Laser Range Finder Intrinsic Parameter Estimation
 
-**Anders Smitterberg · Progress Munoriarwa**  
+**Anders Smitterberg & Progress Munoriarwa**  
 EE5531 Intro to Robotics
 
 ---
