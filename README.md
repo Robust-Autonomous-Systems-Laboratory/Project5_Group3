@@ -43,7 +43,7 @@ There were several challenges when setting up the measurements. First, it was di
 
 ![Histogram 0.5 m](analysis/figures/hist_0_5m.png)
 
-The distribution's mode is approximately at 501 mm. I would not call this distribution Gaussian; there are visible tails and clusters, but the total range of the measurements is still quite small at about 5 mm. Interestingly, there are very few short measurements. 
+The distribution's mode is approximately at 501 mm. We would not call this distribution Gaussian; there are visible tails and clusters, but the total range of the measurements is still quite small at about 5 mm. Interestingly, there are very few short measurements. 
 
 ### 1.0 m
 
@@ -59,7 +59,7 @@ It appears as though the standard deviation increases significantly in this dist
 
 ### Distribution Shape Discussion
 
-Across all the measurements, it appears as though $p_{hit}$ dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0 m distribution. Additionally, there didn't appear to be any "long" measurements on the sensor; if there were, they were likely already clipped by the firmware. If I had to characterize these distributions, I would have preferred longer ROS bags, and I suspect they would have eventually converged to a Gaussian-like distribution. I believe that $p_{hit}$ dominates, and for simplicity's sake, it is sufficient to characterize this sensor's performance.
+Across all the measurements, it appears as though $p_{hit}$ dominates. There do not appear to be any short measurements, other than potentially a tail on the 1.0 m distribution. Additionally, there didn't appear to be any "long" measurements on the sensor; if there were, they were likely already clipped by the firmware. If we had to characterize these distributions, we would have preferred longer ROS bags, and we suspect they would have eventually converged to a Gaussian-like distribution. We believe that $p_{hit}$ dominates, and for simplicity's sake, it is sufficient to characterize this sensor's performance.
 
 ---
 
@@ -79,7 +79,14 @@ Across all the measurements, it appears as though $p_{hit}$ dominates. There do 
 
 
 ### Proposed Uncertainty Model
-The beam model represents the probability of a LiDAR measurement using several components, but in this implementation, I focused primarily on the $p_{hit}$ component. The $p_{hit}$ term models accurate range measurements as a Gaussian distribution centered at the expected distance $z^*$, with standard deviation $\sigma_{hit}$. The parameter $\sigma_{hit}$ represents the sensor’s measurement noise and determines how spread out the measurements are around the true distance. For calibration, we placed the LiDAR at a known target distance and collected range measurements within a small angular window around the target angle. We then used Welford’s algorithm to compute the running mean and variance of the measurements. From the running variance, we calculated $\sigma_{hit}$, which quantifies the random noise in the sensor readings. By continuously updating the running statistics, we were able to estimate how much the measurements fluctuated around the true distance. A small $\sigma_{hit}$ indicates that the sensor is precise with low noise, while a larger $\sigma_{hit}$ indicates greater measurement uncertainty. We also monitored the difference between the running mean and the known target distance to observe any systematic bias, but the primary calibration parameter used in the beam model was $\sigma_{hit}$. Overall, the calibration process allowed me to estimate the Gaussian noise parameter $\sigma_{hit}$, which is essential for accurately modeling the likelihood of LiDAR measurements in the beam model.
+
+The beam model represents the probability of a LiDAR measurement using several components, but in our implementation, we focused primarily on the $p_{hit}$ component. This term models accurate range measurements as a Gaussian distribution centered at the expected distance $z^*$, with a standard deviation $\sigma_{hit}$ that represents the measurement noise.
+
+Through our offline analysis of the ROS bags, we observed a clear relationship between the target distance and the resulting measurement noise. By fitting a linear model to our estimated $\sigma_{hit}$ values across the 0.5 m to 2.0 m range, we determined the following uncertainty model:
+
+$$\sigma_{hit}(z^*) = 0.00023 + 0.00053 \cdot z^*$$
+
+This linear model fits our data quite well for the tested range, capturing the expected trend where measurement uncertainty grows as the distance increases. This growth is typically attributed to beam divergence and a reduction in returned signal power at greater distances. By adopting this distance-dependent $\sigma_{hit}$, we can more accurately characterize the likelihood of LiDAR measurements using standard deviation.
 
 ### Outlier Rates and Discussion
 
@@ -125,9 +132,9 @@ At 2.0 m, the systematic bias was nearly zero. However, $\sigma_{hit}$ increas
 The results show that:
 
 - Measurement noise $\sigma_{hit}$ increases as distance increases.  
-- Systematic bias is very small at all tested distances.  
+- Systematic bias exists, but is small at all tested distances.  
 - Outlier rates are low (0 - 9.18%).  
-- The sensor performs very consistently within the tested range.  
+- The sensor performs well within the tested range.  
 
 The increase in $\sigma_{hit}$ with distance is expected because LiDAR measurement uncertainty typically grows with range due to beam divergence and signal attenuation. Overall, the LiDAR demonstrates high precision, minimal systematic bias, and a low outlier rate, indicating reliable performance for use in the Gaussian $p_{hit}$ component of the beam model.
 
@@ -137,7 +144,7 @@ The increase in $\sigma_{hit}$ with distance is expected because LiDAR measureme
 
 **Q1. Does the measurement distribution match the Gaussian assumption of $p_{hit}$?**
 
-Yes, with some caveats. It appears as though the Gaussian distribution becomes more evident at larger measurement distances. I believe that with more measurements over a longer time, we would be more likely to see this emerge. A Gaussian centered on the mean is a reasonable assumption for the distributions. The only real outlier in my mind is the 1.0 m case, which has some distinct looking tails. 
+Yes, with some caveats. It appears as though the Gaussian distribution becomes more evident at larger measurement distances. We believe that with more measurements over a longer time, we would be more likely to see this emerge. We think that a Gaussian centered on the mean is a reasonable assumption for the distributions. The only real outlier in our view is the 1.0 m case, which has some distinct looking tails. 
 
 **Q2. How does measurement uncertainty vary with distance?**
 
