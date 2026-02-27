@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float64
+import numpy as np
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
 class LidaCalibration(Node):
@@ -33,6 +34,9 @@ class LidaCalibration(Node):
 
         self.sigma_hit = 0.0
         self.bias = 0.0
+        self.measured_values = np.array([])
+
+        self.z_star = 0.0
         
         ##required subscriptions and publisher accord to the doc
         self.create_subscription(LaserScan, "/scan", self.handle_scans, sub_qos)
@@ -41,10 +45,19 @@ class LidaCalibration(Node):
 
     def handle_scans(self, msg:LaserScan):
 
-        print(f"angle min : {msg.angle_min}")
-        print(f"angle max : {msg.angle_max}")
-        print(f"angle incr : {msg.angle_increment}")
-        print(f"data : {msg.ranges[0:10]}")
+        
+        index = int((self.target_angle - msg.angle_min) / msg.angle_increment)
+        half = int((self.angle_window * 0.5) / msg.angle_increment)
+        i0 = max(index - half, 0)
+        i1 = min(index + half, len(msg.ranges) - 1)
+        window_ranges = np.array(msg.ranges[i0:i1+1], dtype=float)
+        valid = np.isfinite(window_ranges)
+        valid &= (window_ranges >= msg.range_min) & (window_ranges <= msg.range_max)
+        self.measured_values = np.array(window_ranges[valid].tolist(), dtype=float)
+
+        self.z_star = np.mean(self.measured_values)
+
+        print(self.z_star)
 
 
     def p_hit(self):
