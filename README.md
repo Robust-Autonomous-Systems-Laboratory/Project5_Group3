@@ -1,6 +1,6 @@
 # Project 5: Laser Range Finder Intrinsic Parameter Estimation
 
-**Anders Smitterberg & Progress Munoriarwa**  
+**Anders Smitterberg · Progress Munoriarwa**  
 EE5531 Intro to Robotics
 
 ---
@@ -81,40 +81,37 @@ Across all the measurements it appears although the p_hit dominates. There do no
 
 ### Proposed Uncertainty Model
 The Beam Model represents the probability of a LiDAR measurement using several components, but in this implementation I focused primarily on the p_hit
-component. The  \(\p_{hit}\) term models accurate range measurements as a Gaussian distribution centered at the expected distance z_star
-, with standard deviation signma_hit. The parameter \(\sigma_{hit}\) represents the sensor’s measurement noise and determines how spread out the measurements are around the true distance. For calibration, we placed the LiDAR at a known target distance and collected range measurements within a small angular window around the target angle. We then used Welford’s algorithm to compute the running mean and variance of the measurements. From the running variance, we calculated  \(\sigma_{hit}\)
-,which quantifies the random noise in the sensor readings. By continuously updating the running statistics, We were able to estimate how much the measurements fluctuated around the true distance. A small \(\sigma_{hit}\) indicates that the sensor is precise with low noise, while a larger  \(\sigma_{hit}\) indicates greater measurement uncertainty. We also monitored the difference between the running mean and the known target distance to observe any systematic bias, but the primary calibration parameter used in the beam model was \(\sigma_{hit}\) Overall, the calibration process allowed me to estimate the Gaussian noise parameter  \(\sigma_{hit}\) which is essential for accurately modeling the likelihood of LiDAR measurements in the beam model.
+component. The p_hit term models accurate range measurements as a Gaussian distribution centered at the expected distance z_star
+, with standard deviation signma_hit. The parameter sigma_hit represents the sensor’s measurement noise and determines how spread out the measurements are around the true distance. For calibration, we placed the LiDAR at a known target distance and collected range measurements within a small angular window around the target angle. We then used Welford’s algorithm to compute the running mean and variance of the measurements. From the running variance, we calculated sigma_hit
+,which quantifies the random noise in the sensor readings. By continuously updating the running statistics, We were able to estimate how much the measurements fluctuated around the true distance. A small sigma_hit indicates that the sensor is precise with low noise, while a larger sigma_hit indicates greater measurement uncertainty. We also monitored the difference between the running mean and the known target distance to observe any systematic bias, but the primary calibration parameter used in the beam model was sigma_hit Overall, the calibration process allowed me to estimate the Gaussian noise parameter sigma_hit which is essential for accurately modeling the likelihood of LiDAR measurements in the beam model.
 
 ### Outlier Rates and Discussion
 
 
-I evaluated the LiDAR performance at three known target distances: 0.5 m, 1.0 m, and 2.0 m. For each case, I analyzed the number of samples collected, the estimated \(\sigma_{hit}\), the measurement error, and the number of detected outliers (defined as measurements exceeding 3 standard deviations from the running mean).
+We evaluated the LiDAR performance at three known target distances: 0.5 m, 1.0 m, and 2.0 m. For each case, We analyzed the number of samples collected, the estimated sigma_hit, the measurement error, and the number of detected outliers (defined as measurements exceeding 3 standard deviations from the running mean).
 
 *** 0.5 m Results ***
 
 - **Mean measurement:** 0.50077 m  
 - **Measurement error:** 0.00077 m  
-- **\(\sigma_{hit}\):** 0.00042 m  
+- **sigma_hit:** 0.00042 m  
 - **Samples:** 173  
 - **Outliers:** 0  
 
-At 0.5 m, the sensor showed extremely small measurement error and very low noise. The estimated \(\sigma_{hit}\) was the smallest among all tested distances, indicating very high precision at short range. No outliers were detected, suggesting stable and consistent readings.
+At 0.5 m, the sensor showed extremely small measurement error and very low noise. The estimated sigma_hit was the smallest among all tested distances, indicating very high precision at short range. No outliers were detected, suggesting stable and consistent readings.
 
----
 
 *** 1.0 m Results ***
 
 - **Mean measurement:** 1.00674 m  
 - **Measurement error:** 0.00674 m  
-- **\(\sigma_{hit}\):** 0.00085 m  
+- **sigma_hit:** 0.00085 m  
 - **Samples:** 184  
 - **Outliers:** 3  
 
-At 1.0 m, a small systematic bias was observed, with the sensor slightly overestimating the distance by about 6.7 mm. The noise level increased compared to 0.5 m, as shown by the larger \(\sigma_{hit}\). Three outliers were detected, which represents:
+At 1.0 m, a small systematic bias was observed, with the sensor slightly overestimating the distance by about 6.7 mm. The noise level increased compared to 0.5 m, as shown by the larger sigma_hit. Three outliers were detected, which represents:
 
-\[
-\frac{3}{184} \approx 1.63\%
-\]
+\frac{3}{184} =  1.63\%
 
 This is still a very low outlier rate, indicating generally stable performance.
 
@@ -123,22 +120,24 @@ This is still a very low outlier rate, indicating generally stable performance.
 
 - **Mean measurement:** 2.00061 m  
 - **Measurement error:** 0.00061 m  
-- **\(\sigma_{hit}\):** 0.00125 m  
+- **sigma_hit:** 0.00125 m  
 - **Samples:** 239  
 - **Outliers:** 0  
 
-At 2.0 m, the systematic bias was nearly zero. However, \(\sigma_{hit}\) increased further, indicating that measurement noise grows with distance. Despite the increased variance, no outliers were detected, showing consistent performance.
+At 2.0 m, the systematic bias was nearly zero. However, sigma_hit increased further, indicating that measurement noise grows with distance. Despite the increased variance, no outliers were detected, showing consistent performance.
 
 The results show that:
 
-- Measurement noise (\(\sigma_{hit}\)) increases as distance increases.  
+- Measurement noise sigma_hit increases as distance increases.  
 - Systematic bias is very small at all tested distances.  
 - Outlier rates are extremely low (0 - 1.63%).  
 - The sensor performs very consistently within the tested range.  
 
-The increase in \(\sigma_{hit}\) with distance is expected because LiDAR measurement uncertainty typically grows with range due to beam divergence and signal attenuation.
-But Overall, the LiDAR demonstrates high precision, minimal systematic bias, and a very low outlier rate, indicating reliable performance for use in the Gaussian \(p_{hit}\) component of the beam model.
+The increase in sigma_hit with distance is expected because LiDAR measurement uncertainty typically grows with range due to beam divergence and signal attenuation.
+But Overall, the LiDAR demonstrates high precision, minimal systematic bias, and a very low outlier rate, indicating reliable performance for use in the Gaussian p_hit component of the beam model.
 
+
+---
 
 ## 4. Analysis Questions
 
