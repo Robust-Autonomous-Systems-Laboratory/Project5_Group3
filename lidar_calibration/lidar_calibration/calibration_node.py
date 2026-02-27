@@ -4,7 +4,7 @@ from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float64
 import numpy as np
 from math import sqrt, pi, exp
-from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class LidaCalibration(Node):
 
@@ -33,12 +33,10 @@ class LidaCalibration(Node):
         self.target_angle = float(self.get_parameter("target_angle").value)
         self.angle_window = float(self.get_parameter("angle_window").value)
 
-        # TODO: initialize Welford's online algorithm state variables
         self.n = 0
         self.running_mean = 0.0
         self.M2 = 0.0
 
-        # TODO: initialize outlier counter
         self.outlier_count = 0
 
         self.max_range = 0.0
@@ -80,7 +78,7 @@ class LidaCalibration(Node):
             self.range_error_pub.publish(Float64(data=meas_error))
 
             # update Welford running statistics
-            # https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance #Welford's_online_algorithm
+            # https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm
             self.n += 1
             delta = z - self.running_mean
             self.running_mean += delta / self.n
@@ -95,18 +93,16 @@ class LidaCalibration(Node):
             if self.n > 20 and abs(z - self.running_mean) > 3 * self.sigma_hit:
                 self.outlier_count += 1
 
+            # log current estimated mean, sigma_hit, and outlier count every 100 scans
+            if self.n % 100 == 0:
+                self.get_logger().info(f"Scans: {self.n}  Mean: {self.running_mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
+
         # publish sigma_hit on /calibration/statistics
         self.statistics_pub.publish(Float64(data=self.sigma_hit))
 
         self.mean = self.running_mean
         self.error = self.mean - self.target_distance
         self.max_range = msg.range_max
-
-        
-
-        # log curent estimated mean, sigma_hit, and outlier count every 100 scans
-        if self.n % 100 == 0:
-            self.get_logger().info(f"Scans: {self.n}  Mean: {self.mean:.4f} m  Sigma_hit: {self.sigma_hit:.4f} m  Outliers: {self.outlier_count}")
 
 
     def p_hit(self):

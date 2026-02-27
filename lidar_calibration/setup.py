@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='vboxuser',
+    maintainer='Progress Munoriarwa, Anders Smitterberg',
     maintainer_email='mmunoria@mtu.edu',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='ROS2 node for LiDAR intrinsic parameter estimation using Welford\'s online algorithm to compute running mean, sigma_hit, and outlier rate.',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest',

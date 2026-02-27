@@ -3,9 +3,15 @@
 <package format="3">
   <name>lidar_calibration</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="mmunoria@mtu.edu">vboxuser</maintainer>
-  <license>TODO: License declaration</license>
+  <description>ROS2 node for LiDAR intrinsic parameter estimation using Welford's online algorithm to compute running mean, sigma_hit, and outlier rate.</description>
+  <maintainer email="mmunoria@mtu.edu">Progress Munoriarwa</maintainer>
+  <maintainer email="jasmitte@mtu.edu">Anders Smitterberg</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>python3-numpy</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
